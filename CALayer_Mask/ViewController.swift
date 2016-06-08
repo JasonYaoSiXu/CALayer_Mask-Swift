@@ -8,20 +8,21 @@
 
 import UIKit
 
+//延时
 func delay(seconds: Double, complition: () -> ()) {
-    
     let timer = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * seconds))
-    
     dispatch_after(timer, dispatch_get_main_queue(), {
         complition()
     })
 }
+
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var AvtarImageView: UIImageView!
     @IBOutlet weak var infoLabel: UILabel!
     @IBOutlet weak var cVuew: CustomView!
+    @IBOutlet weak var changButton: UIButton!
     
     let maskView = CAShapeLayer()
     let circleMask = CAShapeLayer()
@@ -32,7 +33,7 @@ class ViewController: UIViewController {
         view.backgroundColor = UIColor ( red: 0.8353, green: 0.7608, blue: 0.6549, alpha: 1.0 )
         let rect = CGRect(x: 0, y: 0, width: AvtarImageView.bounds.width, height: AvtarImageView.bounds.height)
         maskView.path = UIBezierPath(ovalInRect: rect).CGPath
-        
+        changButton.hidden = true
         infoLabel.textColor = UIColor.whiteColor()
         infoLabel.backgroundColor = UIColor.clearColor()
         infoLabel.text = "123456"
@@ -45,9 +46,7 @@ class ViewController: UIViewController {
         AvtarImageView.layer.mask = maskView
         AvtarImageView.layer.insertSublayer(circleMask, below: maskView)
         
-        
         print("cVuew.name = \(cVuew.name)")
-        // Do any additional setup after loading the view, typically from a nib.
         
         delay(2, complition: { [unowned self] _ in
             self.customViewPro()
@@ -79,6 +78,13 @@ class ViewController: UIViewController {
         })
     }
     
+    @IBAction func TapChangeButton(sender: UIButton) {
+        changButton.hidden = true
+        UIApplication.sharedApplication().keyWindow!.rootViewController = storyboard!.instantiateViewControllerWithIdentifier("ViewController") as UIViewController
+    }
+    
+    
+    //给蒙板和边框添加动画
     func animation() {
         let bascAni = CABasicAnimation(keyPath: "transform.scale")
         bascAni.fromValue = 1.0
@@ -91,6 +97,7 @@ class ViewController: UIViewController {
         circleMask.addAnimation(bascAni, forKey: nil)
     }
     
+    //注水效果
     func labelMask() {
         infoMaskView.path = UIBezierPath(ovalInRect: infoLabel.bounds).CGPath
         let maskView = CABasicAnimation(keyPath: "position.x")
@@ -100,6 +107,7 @@ class ViewController: UIViewController {
         infoMaskView.addAnimation(maskView, forKey: nil)
     }
     
+    //给自定义视图添加圆角，阴影效果
     func customViewPro() {
         print("\(#function)")
         cVuew.backGroudnColor = UIColor.blueColor()
@@ -117,8 +125,8 @@ class ViewController: UIViewController {
         shadow.shadowOffset = CGSize(width: -4, height: 2)
         shadow.shadowColor = UIColor.orangeColor().CGColor
         shadow.shadowOpacity = 0.8
-        
         view.layer.insertSublayer(shadow, below: cVuew.layer)
+        
         
     }
     
@@ -128,7 +136,7 @@ class ViewController: UIViewController {
     
     override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         print("\(#function)")
-        animation()
+        changButton.hidden = false
     }
 
 }
